@@ -1,0 +1,25 @@
+{
+  "name": "comp646-plagiarism-checker",
+  "version": "1.0.0",
+  "description": "A web application that detects if a student's submission has similar writing style or document structure as other students' submissions.",
+  "main": "index.js",
+  "scripts": {
+    "server": "cd server && flask run",
+    "client": "cd client && npm start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/irrundle3/comp646-plagiarism-checker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/irrundle3/comp646-plagiarism-checker/issues"
+  },
+  "homepage": "https://github.com/irrundle3/comp646-plagiarism-checker#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
