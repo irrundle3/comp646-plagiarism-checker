@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import AddClass from '../components/addclass';
 
 function Home({setActiveUser}) {
     const [username, setUsername] = useState("");
+    var showAddClass = false;
 
     useEffect(() => {
         async function validateLogin() {
@@ -15,10 +17,13 @@ function Home({setActiveUser}) {
             window.location.replace("/login");
         }
         validateLogin();
-    }, [])
+    });
 
     return (
-        <p> Hello {username} </p>
+        <div>
+            <p> Hello <strong>{username}</strong>! Here are your classes:</p>
+            <AddClass show={showAddClass}/>
+        </div>
     )
 }
 
