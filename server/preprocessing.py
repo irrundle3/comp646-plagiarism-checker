@@ -9,3 +9,11 @@ def to_txt(path: os.PathLike):
                 doc = docx2txt.process(infile)
                 outfile.write(doc)
                 print("processed")
+                
+def path_to_txt(path: os.PathLike):
+    print(path)
+    if path.split(".")[-1] == "docx":
+        return os.path.dirname(path) + '/.' + os.path.basename(path)[:-5] + '.txt'
+    elif path.split(".")[-1] == "txt":
+        return path
+    return None

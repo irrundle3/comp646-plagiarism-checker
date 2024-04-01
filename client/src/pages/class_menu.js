@@ -45,7 +45,7 @@ export default function ClassMenu() {
         <Box component="section">
             <h1>{cid}</h1>
             <Grid container spacing={2}>
-               {docs.map((filename) => (<Grid item key={filename} xs={12}><Link href={"/api/download/" + cid + "/" + filename}>{filename}</Link></Grid>))}
+               {docs.map((filename) => (<Grid item key={filename} xs={12}><Link href={"/class/" + cid + "/document/" + filename}>{filename}</Link></Grid>))}
             </Grid>
             <Box
                 component="form"

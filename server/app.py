@@ -4,7 +4,7 @@ import json
 import os
 import atexit
 import shutil
-from preprocessing import to_txt
+from preprocessing import to_txt, path_to_txt
 
 app = Flask(__name__)
 
@@ -22,7 +22,6 @@ def login():
     if request.method == "GET":
         print(session)
         if "username" in session:
-            print("here")
             return jsonify({
                 "username":session["username"]
             })
@@ -103,6 +102,20 @@ def download(id: str, document: str):
         return send_file(file_path, as_attachment=True)
     abort(401, description="Unauthorized: Invalid credentials")
     return {}
+
+@app.route("/api/text/<id>/<document>", methods=["GET"])
+def get_text(id: str, document: str):
+    if "username" not in session:
+        abort(401, description="Unauthorized: Invalid credentials")
+        return {}
+    file_path = f"user_files/{session['username']}_files/{id}/{document}"
+    file_path = path_to_txt(file_path)
+    print(file_path)
+    if file_path is not None and os.path.isfile(file_path):
+        with open(file_path, "r") as file:
+            text = file.read()
+            return jsonify({"text": text})
+    abort(404, description="File not found")
 
 def exit_handler():
     shutil.rmtree("user_files/")

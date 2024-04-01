@@ -13,6 +13,7 @@ import Navbar from './components/navbar';
 import Register from './pages/register';
 import ClassMenu from './pages/class_menu';
 import Box from '@mui/material/Box';
+import DisplayDocument from './pages/display_document';
 import './App.css';
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
           <Route exact path="/logout" element={<Logout setActiveUser={setActiveUser}/>}></Route>
           <Route exact path="/register" element={<Register setActiveUser={setActiveUser}/>}></Route>
           <Route path = "/class/:cid" element={<ClassMenu />}></Route>
+          <Route path = "/class/:cid/document/:document" element={<DisplayDocument />}></Route>
         </Routes>
       </Router>
     </Box>
