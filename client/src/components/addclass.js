@@ -37,7 +37,7 @@ export default function AddClass() {
         fetch('/api/add-class-id/' + data.get('class-id'), requestOptions)
             .then(response => response.json())
             .then(res => {
-              setClassList(classes.concat([data.get('class-id')]))
+            //   setClassList(classes.concat([data.get('class-id')]))
               fillClassList();
             })
       };

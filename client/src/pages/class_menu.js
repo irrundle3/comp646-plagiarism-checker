@@ -1,34 +1,37 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useParams } from 'react-router-dom'
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import Fab from '@mui/material/Fab';
-import AddIcon from '@mui/icons-material/Add';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 export default function ClassMenu() {
     const { cid } = useParams();
-    const [documents, updateDocuments] = useState([]);
+    const [docs, updateDocuments] = useState([]);
     const fileInputRef = useRef(); 
 
     async function fillDocumentList() {
-        const docList = await fetch("/api/documents/" + cid);
-        updateDocuments(docList);
+        const response = await fetch("/api/documents/" + cid);
+        if (await response.ok) {
+            const docList = await response.json();
+            updateDocuments(docList);
+        }
     }
+
+    useEffect(() => {
+        fillDocumentList();
+    }, []);
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log(data.get("upload"));
+        data.append('file', data.get('upload'));
+        // console.log(data.get("upload"));
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                document: data.get('upload'),
-            })
+            body: data
         };
         fetch('/api/upload/' + cid, requestOptions)
             .then(response => response.json())
@@ -42,7 +45,7 @@ export default function ClassMenu() {
         <Box component="section">
             <h1>{cid}</h1>
             <Grid container spacing={2}>
-                {documents.map((c) => (<Grid item key={c} xs={6}><Link href={"/doc/" + c}>{c}</Link></Grid>))}
+               {docs.map((filename) => (<Grid item key={filename} xs={12}><Link href={"/api/download/" + cid + "/" + filename}>{filename}</Link></Grid>))}
             </Grid>
             <Box
                 component="form"
@@ -52,7 +55,7 @@ export default function ClassMenu() {
                 noValidate
                 onSubmit={handleSubmit}
             >
-                <TextField type="file" id="upload" name="upload" label="Upload Document" variant="outlined" inputRef={fileInputRef}/>
+                <TextField type="file" id="upload" name="upload" variant="outlined" inputRef={fileInputRef}/>
                 <Button
                 type="submit"
                 fullWidth
