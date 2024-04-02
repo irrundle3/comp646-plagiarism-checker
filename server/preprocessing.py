@@ -17,3 +17,10 @@ def path_to_txt(path: os.PathLike):
     elif path.split(".")[-1] == "txt":
         return path
     return None
+
+def get_text(username, class_id, document):
+    text_path = path_to_txt(f"user_files/{username}_files/{class_id}/{document}")
+    if (text_path is not None) and (not os.path.isfile(text_path)): raise Exception("File not found.")
+    with open(text_path) as file:
+        text = file.read()
+    return text

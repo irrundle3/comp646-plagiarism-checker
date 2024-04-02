@@ -4,6 +4,7 @@ import json
 import os
 import atexit
 import shutil
+import model
 from preprocessing import to_txt, path_to_txt
 
 app = Flask(__name__)
@@ -78,6 +79,7 @@ def upload_file(id: str):
     filename = os.path.join(f"user_files/{session['username']}_files/{id}", file.filename)
     file.save(filename)
     to_txt(filename)
+    model.add_file_to_db(session["username"], id, filename.split("/")[-1])
     return {"id":id}
 
 @app.route("/api/documents/<id>", methods = ["GET"])
@@ -116,6 +118,18 @@ def get_text(id: str, document: str):
             text = file.read()
             return jsonify({"text": text})
     abort(404, description="File not found")
+    
+@app.route("/api/matches/<id>/<document>", methods=["GET"])
+def get_matches(id: str, document: str):
+    if "username" not in session:
+        abort(401, description="Unauthorized: Invalid credentials")
+        return {}
+    try:
+        results = model.find_matches(session["username"], id, document)
+        return jsonify(results)
+    except:
+        abort(404, description="File not found")
+    
 
 def exit_handler():
     shutil.rmtree("user_files/")
