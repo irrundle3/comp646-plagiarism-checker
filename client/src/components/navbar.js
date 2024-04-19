@@ -13,7 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import PersonIcon from '@mui/icons-material/Person';
 
-const pages = ["Submissions", "Logout"];
+const pages = ["Submissions", "Student Login", "Teacher Login", "Logout"];
 const settings = ['Logout'];
 
 function Navbar({activeUser}) {
@@ -24,6 +24,11 @@ function Navbar({activeUser}) {
   const handlePageClick = (page) => {
     if (page === "Logout") {
       window.location.replace("/logout");
+    } else if(page === "Student Login") {
+      window.location.replace("/student/login");
+    }
+    else if(page === "Teacher Login") {
+      window.location.replace("/teacher/login");
     }
   };
 

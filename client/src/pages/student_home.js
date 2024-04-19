@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AddClass from '../components/addclass';
 
-function Home({setActiveUser}) {
+function StudentHome({setActiveUser}) {
     const [username, setUsername] = useState("");
     var showAddClass = false;
 
@@ -27,4 +27,4 @@ function Home({setActiveUser}) {
     )
 }
 
-export default Home;
+export default StudentHome;

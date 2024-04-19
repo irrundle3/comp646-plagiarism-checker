@@ -2,12 +2,12 @@ from flask import Flask
 import os
 import atexit
 import shutil
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect
 from user_models import db
 from blueprint.student_auth import student_auth_bp
 from blueprint.student_home import student_home_bp
 from blueprint.student_document_view import student_document_bp
+from blueprint.teacher_auth import teacher_auth_bp
 
 # Create a Flask application instance
 app = Flask(__name__)
@@ -25,6 +25,7 @@ db.init_app(app)
 
 # Register blueprints
 app.register_blueprint(student_auth_bp)
+app.register_blueprint(teacher_auth_bp)
 app.register_blueprint(student_home_bp)
 app.register_blueprint(student_document_bp)
 

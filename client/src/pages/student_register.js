@@ -5,7 +5,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 // import FormControlLabel from '@mui/material/FormControlLabel';
 // import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -15,7 +14,7 @@ import { createTheme, ThemeProvider} from '@mui/material/styles';
 
 const defaultTheme = createTheme();
 
-export default function Login({setActiveUser}) {
+export default function StudentRegister({setActiveUser}) {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -27,12 +26,12 @@ export default function Login({setActiveUser}) {
             password: data.get('password')
         })
     };
-    fetch('/api/login', requestOptions)
+    fetch('/api/student/register', requestOptions)
         .then(response => response.json())
         .then(data => {
           console.log(data);
           setActiveUser(data.username)
-          window.location.href = "/";
+          window.location.href ="/student/home";
         })
   };
 
@@ -52,7 +51,7 @@ export default function Login({setActiveUser}) {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Log In
+            Student Register
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
@@ -78,6 +77,17 @@ export default function Login({setActiveUser}) {
                   autoComplete="new-password"
                 />
               </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="password2"
+                  label="Repeat Password"
+                  type="password"
+                  id="password2"
+                  autoComplete="new-password"
+                />
+              </Grid>
             </Grid>
             <Button
               type="submit"
@@ -85,11 +95,9 @@ export default function Login({setActiveUser}) {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Log In
+              Register
             </Button>
-            <Link href="/register">Register</Link>
           </Box>
-          <p>Passwords dont matter at the moment</p>
         </Box>
       </Container>
     </ThemeProvider>
