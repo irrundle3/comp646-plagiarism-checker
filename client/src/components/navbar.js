@@ -19,6 +19,7 @@ const settings = ['Logout'];
 function Navbar({activeUser}) {
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  
   console.log("rendering navbar");
 
   const handlePageClick = (page) => {

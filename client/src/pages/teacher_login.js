@@ -32,7 +32,7 @@ export default function Login({setActiveUser}) {
         .then(data => {
           console.log(data);
           setActiveUser(data.username)
-          window.location.href = "/";
+          window.location.href = "/teacher/home";
         })
   };
 

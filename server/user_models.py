@@ -16,6 +16,11 @@ class Teacher(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     classes_taught = db.relationship('Class', backref='taught_by_teacher', lazy=True)
+    students = db.relationship('Student', secondary='enrollment', 
+                               backref=db.backref('teachers', lazy='dynamic'),
+                               primaryjoin="Teacher.id == enrollment.c.class_id",
+                               secondaryjoin="enrollment.c.student_id == Student.id",
+                               lazy='dynamic')
 
 class Class(db.Model):
     __tablename__ = 'Class'

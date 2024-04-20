@@ -31,7 +31,7 @@ export default function TeacherRegister({setActiveUser}) {
         .then(data => {
           console.log(data);
           setActiveUser(data.username)
-          window.location.href = "/";
+          window.location.href = "/teacher/home";
         })
   };
 

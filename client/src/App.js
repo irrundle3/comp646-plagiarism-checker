@@ -5,6 +5,7 @@ import {
   Route,
 } from "react-router-dom";
 import StudentHome from "./pages/student_home"
+import TeacherHome from "./pages/teacher_home"
 import StudentLogin from "./pages/student_login"
 import TeacherLogin from "./pages/teacher_login"
 import Logout from './pages/logout';
@@ -45,6 +46,7 @@ function App() {
       <Router>
         <Routes>
           <Route exact path="/student/home" element={<StudentHome setActiveUser={setActiveUser}/>}></Route>
+          <Route exact path="/teacher/home" element={<TeacherHome setActiveUser={setActiveUser}/>}></Route>
           <Route exact path="/student/login" element={<StudentLogin setActiveUser={setActiveUser}/>}></Route>
           <Route exact path="/teacher/login" element={<TeacherLogin setActiveUser={setActiveUser}/>}></Route>
           <Route exact path="/logout" element={<Logout setActiveUser={setActiveUser}/>}></Route>
