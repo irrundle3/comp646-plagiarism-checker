@@ -54,7 +54,9 @@ atexit.register(exit_handler)
 with app.app_context():
     # Create all database tables
     db.create_all()
-    
+    # db.drop_all()
+    #     # Recreate all tables
+    # db.create_all()
     # Use SQLAlchemy's inspect module to check if the Student table exists
     inspector = inspect(db.engine)
     if 'Student' in inspector.get_table_names():

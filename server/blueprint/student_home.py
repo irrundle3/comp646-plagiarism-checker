@@ -2,6 +2,7 @@ from flask import request, Blueprint, jsonify, session, abort
 import os
 from preprocessing import to_txt
 import model
+from user_models import  Class, Teacher, Student
 
 student_home_bp = Blueprint('student_home', __name__)
 
@@ -52,3 +53,26 @@ def upload_file(id: str):
     to_txt(filename)
     model.add_file_to_db(session["username"], id, filename.split("/")[-1])
     return {"id": id}
+
+
+@student_home_bp.route("/api/student/classes", methods=["GET"])
+def get_student_classes():
+    student_username = request.args.get('student_username')
+    if not student_username:
+        return jsonify({'error': 'No student username provided'}), 400
+
+    student = Student.query.filter_by(username=student_username).first()
+    if not student:
+        return jsonify({'error': 'Student not found'}), 404
+
+    classes = student.enrolled_classes
+    class_data = []
+    for class_obj in classes:
+        class_info = {
+            'id': class_obj.id,
+            'name': class_obj.name,
+            'teacher': class_obj.teacher.username,
+            'enrolled_students': [student.username for student in class_obj.enrolled_students]
+        }
+        class_data.append(class_info)
+    return jsonify(class_data)
