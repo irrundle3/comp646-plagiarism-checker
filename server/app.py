@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, session
 import os
 import atexit
 import shutil
@@ -28,6 +28,15 @@ app.register_blueprint(student_auth_bp)
 app.register_blueprint(teacher_auth_bp)
 app.register_blueprint(student_home_bp)
 app.register_blueprint(student_document_bp)
+
+# Define route for user logout
+@app.route("/api/logout")
+def logout():
+    if "username" in session:
+        # Remove username from session to logout user
+        session.pop("username")
+        return "Successfully logged out"
+    return {}
 
 # Define exit handler to remove user files directory on application exit
 def exit_handler():

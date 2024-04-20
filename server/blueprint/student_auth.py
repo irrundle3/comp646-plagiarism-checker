@@ -20,7 +20,7 @@ def login():
         if user and check_password_hash(user.password, password):
             # Store the username in the session to indicate the user is logged in
             session["username"] = username
-            return jsonify({"message": "Login successful"})
+            return jsonify(data)
         else:
             # Return unauthorized error if login fails
             abort(401, description="Unauthorized: Invalid username or password")
@@ -32,14 +32,7 @@ def login():
             # Return unauthorized error if user is not logged in
             abort(401, description="Unauthorized: Invalid credentials")
 
-# Define route for user logout
-@student_auth_bp.route("/api/student/logout")
-def logout():
-    if "username" in session:
-        # Remove username from session to logout user
-        session.pop("username")
-        return "Successfully logged out"
-    return {}
+
 
 # Define route for user registration
 @student_auth_bp.route("/api/student/register", methods=["POST"])
@@ -54,8 +47,8 @@ def register():
 
     # Hash the password before storing it in the database
     hashed_password = generate_password_hash(password)
-    new_user = Student(username=username, password=hashed_password)
-    db.session.add(new_user)
+    new_student = Student(username=username, password=hashed_password)
+    db.session.add(new_student)
     db.session.commit()
 
     session["username"] = username
@@ -71,3 +64,4 @@ def get_students():
 
     # Return the list of students as JSON
     return jsonify({"students": student_list})
+
