@@ -8,6 +8,7 @@ from blueprint.student_auth import student_auth_bp
 from blueprint.student_home import student_home_bp
 from blueprint.student_document_view import student_document_bp
 from blueprint.teacher_auth import teacher_auth_bp
+from blueprint.teacher_home import teacher_home_bp
 
 # Create a Flask application instance
 app = Flask(__name__)
@@ -28,6 +29,7 @@ app.register_blueprint(student_auth_bp)
 app.register_blueprint(teacher_auth_bp)
 app.register_blueprint(student_home_bp)
 app.register_blueprint(student_document_bp)
+app.register_blueprint(teacher_home_bp)
 
 # Define route for user logout
 @app.route("/api/logout")

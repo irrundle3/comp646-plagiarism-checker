@@ -62,12 +62,24 @@ def register():
     return jsonify({"message": "Registration successful"})
 
 @teacher_auth_bp.route("/api/teachers", methods=["GET"])
-def get_teacher():
-    # Query all teachers from the database
+def get_teachers():
     teachers = Teacher.query.all()
-    
-    # Convert the list of teachers objects to a list of dictionaries
-    teacher_list = [{"id": teacher.id, "username": teacher.username} for teacher in teachers]
+    teacher_list = []
 
-    # Return the list of teachers as JSON
-    return jsonify({"teachers": teacher_list})
+    for teacher in teachers:
+        # Retrieve classes taught by the teacher
+        classes_taught = [{'id': class_.id, 'name': class_.name} for class_ in teacher.classes_taught]
+        
+        # Retrieve students taught by the teacher
+        students_taught = [{'id': student.id, 'username': student.username} for student in teacher.students]
+
+        teacher_data = {
+            'id': teacher.id,
+            'username': teacher.username,
+            'password': teacher.password,
+            'classes_taught': classes_taught,
+            'students': students_taught
+        }
+        teacher_list.append(teacher_data)
+
+    return jsonify({'teachers': teacher_list}), 200

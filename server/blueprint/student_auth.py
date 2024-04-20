@@ -56,12 +56,14 @@ def register():
 
 @student_auth_bp.route("/api/students", methods=["GET"])
 def get_students():
-    # Query all students from the database
     students = Student.query.all()
-    
-    # Convert the list of student objects to a list of dictionaries
-    student_list = [{"id": student.id, "username": student.username} for student in students]
-
-    # Return the list of students as JSON
-    return jsonify({"students": student_list})
-
+    student_list = []
+    for student in students:
+        student_info = {
+            'id': student.id,
+            'username': student.username,
+            'password': student.password,
+            'enrolled_classes': [enrolled_class.name for enrolled_class in student.enrolled_classes]
+        }
+        student_list.append(student_info)
+    return jsonify(students=student_list)
