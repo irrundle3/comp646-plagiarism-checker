@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import AddClass from '../components/addclass';
+import AddClass from '../components/addteacherclass';
 
 function Home({ setActiveUser }) {
     const [username, setUsername] = useState("");
