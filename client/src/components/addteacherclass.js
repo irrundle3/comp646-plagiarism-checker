@@ -74,7 +74,6 @@ export default function AddClass({ setActiveUser }) {
 
     return (
         <Box component="section">
-            <p>Hello, <strong>{username}</strong>! Here are your classes:</p>
             <Grid container spacing={2}>
                 {classes.map((c) => (
                     <Grid item key={c.id} xs={6}>
@@ -91,7 +90,7 @@ export default function AddClass({ setActiveUser }) {
                 autoComplete="off"
                 onSubmit={handleSubmit}
             >
-                <TextField id="class-id" name="class-id" label="Class ID" variant="outlined" />
+                <TextField id="class-id" name="class-id" label="Class Name" variant="outlined" />
                 <Button
                     type="submit"
                     fullWidth

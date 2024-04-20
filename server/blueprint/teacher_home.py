@@ -73,6 +73,8 @@ def get_all_classes():
     return jsonify(class_data)
 from flask import request
 
+
+
 @teacher_home_bp.route("/api/teacher/classes", methods=["GET"])
 def get_teacher_classes():
     teacher_username = request.args.get('teacher_username')
@@ -94,3 +96,23 @@ def get_teacher_classes():
         }
         class_data.append(class_info)
     return jsonify(class_data)
+@teacher_home_bp.route("/api/teacher/students", methods=["GET"])
+def get_student_classes():
+    teacher_username = request.args.get('teacher_username')
+    if not teacher_username:
+        return jsonify({'error': 'No teacher username provided'}), 400
+
+    teacher = Teacher.query.filter_by(username=teacher_username).first()
+    if not teacher:
+        return jsonify({'error': 'Teacher not found'}), 404
+
+    students = teacher.students
+    student_data = []
+    for student_obj in students:
+        student_info = {
+            'id': student_obj.id,
+            'username': student_obj.username,
+            'password': student_obj.password
+        }
+        student_data.append(student_info)
+    return jsonify(student_data)

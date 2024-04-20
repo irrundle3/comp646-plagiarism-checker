@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AddClass from '../components/addteacherclass';
+import AddStudent from '../components/addstudenttoteacher';
 
 function Home({ setActiveUser }) {
     const [username, setUsername] = useState("");
@@ -36,11 +37,12 @@ function Home({ setActiveUser }) {
 
     return (
         <div>
-            <p> Hello <strong>{username}</strong>! Here are your classes:</p>
+            <p>Hello <strong>{username}</strong>! Here are your classes:</p>
             <AddClass setActiveUser={setActiveUser} />
-
+            <p>Want to add a student?</p>
+            <AddStudent setActiveUser={setActiveUser} />
         </div>
-    )
+    );
 }
 
 export default Home;
