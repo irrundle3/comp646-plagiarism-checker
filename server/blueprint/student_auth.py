@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 student_auth_bp = Blueprint('student_auth', __name__)
 
 # Define route for user login
-@student_auth_bp.route("/api/student/login", methods=["POST", "GET"])
+@student_auth_bp.route("/student/login", methods=["POST", "GET"])
 def login():
     if request.method == "POST":
         data = request.json
@@ -35,7 +35,7 @@ def login():
 
 
 # Define route for user registration
-@student_auth_bp.route("/api/student/register", methods=["POST"])
+@student_auth_bp.route("/student/register", methods=["POST"])
 def register():
     print("registering!")
     data = request.json
@@ -54,7 +54,7 @@ def register():
     session["username"] = username
     return jsonify({"message": "Registration successful"})
 
-@student_auth_bp.route("/api/students", methods=["GET"])
+@student_auth_bp.route("/students", methods=["GET"])
 def get_students():
     students = Student.query.all()
     student_list = []

@@ -4,7 +4,7 @@ from user_models import  Class, Teacher, Student
 
 teacher_home_bp = Blueprint('teacher_home_bp', __name__)
 
-@teacher_home_bp.route("/api/teacher/home", methods=["POST"])
+@teacher_home_bp.route("/teacher/home", methods=["POST"])
 def create_class_with_students():
     # Get data from the request
     data = request.json
@@ -38,7 +38,7 @@ def create_class_with_students():
         return jsonify({'error': 'Teacher not found'}), 404
 
     
-@teacher_home_bp.route("/api/teacher/register-student", methods=["POST"])
+@teacher_home_bp.route("/teacher/register-student", methods=["POST"])
 def register_student():
     # Get data from the request
     data = request.json
@@ -58,7 +58,7 @@ def register_student():
         return jsonify({'error': 'Teacher or student not found'}), 404
 
     
-@teacher_home_bp.route("/api/teacher/classesget", methods=["GET"])
+@teacher_home_bp.route("/teacher/classesget", methods=["GET"])
 def get_all_classes():
     classes = Class.query.all()
     class_data = []
@@ -75,7 +75,7 @@ from flask import request
 
 
 
-@teacher_home_bp.route("/api/teacher/classes", methods=["GET"])
+@teacher_home_bp.route("/teacher/classes", methods=["GET"])
 def get_teacher_classes():
     teacher_username = request.args.get('teacher_username')
     if not teacher_username:
@@ -96,7 +96,7 @@ def get_teacher_classes():
         }
         class_data.append(class_info)
     return jsonify(class_data)
-@teacher_home_bp.route("/api/teacher/students", methods=["GET"])
+@teacher_home_bp.route("/teacher/students", methods=["GET"])
 def get_student_classes():
     teacher_username = request.args.get('teacher_username')
     if not teacher_username:

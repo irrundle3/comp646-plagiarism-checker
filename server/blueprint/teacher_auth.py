@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 teacher_auth_bp = Blueprint('teacher_auth', __name__)
 
 # Define route for user login
-@teacher_auth_bp.route("/api/teacher/login", methods=["POST", "GET"])
+@teacher_auth_bp.route("/teacher/login", methods=["POST", "GET"])
 def login():
     if request.method == "POST":
         data = request.json
@@ -33,7 +33,7 @@ def login():
             abort(401, description="Unauthorized: Invalid credentials")
 
 # Define route for user logout
-@teacher_auth_bp.route("/api/teacher/logout")
+@teacher_auth_bp.route("/teacher/logout")
 def logout():
     if "username" in session:
         # Remove username from session to logout user
@@ -42,7 +42,7 @@ def logout():
     return {}
 
 # Define route for user registration
-@teacher_auth_bp.route("/api/teacher/register", methods=["POST"])
+@teacher_auth_bp.route("/teacher/register", methods=["POST"])
 def register():
     print("registering!")
     data = request.json
@@ -61,7 +61,7 @@ def register():
     session["username"] = username
     return jsonify({"message": "Registration successful"})
 
-@teacher_auth_bp.route("/api/teachers", methods=["GET"])
+@teacher_auth_bp.route("/teachers", methods=["GET"])
 def get_teachers():
     teachers = Teacher.query.all()
     teacher_list = []

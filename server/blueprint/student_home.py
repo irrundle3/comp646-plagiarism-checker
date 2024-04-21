@@ -11,7 +11,7 @@ student_home_bp = Blueprint('student_home', __name__)
 class_lists = {}
 
 # Define route to get class list associated with the logged-in user
-@student_home_bp.route("/api/class-list", methods=["GET"])
+@student_home_bp.route("/class-list", methods=["GET"])
 def class_list():
     if "username" not in session:
         # Return unauthorized error if user is not logged in
@@ -23,7 +23,7 @@ def class_list():
     return jsonify(class_list)
 
 # Define route to add a class ID to the class list of the logged-in user
-@student_home_bp.route("/api/add-class-id/<id>", methods=["POST"])
+@student_home_bp.route("/add-class-id/<id>", methods=["POST"])
 def add_class_id(id: str):
     if "username" not in session:
         # Return unauthorized error if user is not logged in
@@ -35,7 +35,7 @@ def add_class_id(id: str):
     return {"id": id}
 
 # Define route to upload a file associated with a class ID for the logged-in user
-@student_home_bp.route("/api/upload/<id>", methods=["POST"])
+@student_home_bp.route("/upload/<id>", methods=["POST"])
 def upload_file(id: str):
     if "username" not in session:
         # Return unauthorized error if user is not logged in
@@ -55,7 +55,7 @@ def upload_file(id: str):
     return {"id": id}
 
 
-@student_home_bp.route("/api/student/classes", methods=["GET"])
+@student_home_bp.route("/student/classes", methods=["GET"])
 def get_student_classes():
     student_username = request.args.get('student_username')
     if not student_username:

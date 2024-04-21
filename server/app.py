@@ -32,7 +32,7 @@ app.register_blueprint(student_document_bp)
 app.register_blueprint(teacher_home_bp)
 
 # Define route for user logout
-@app.route("/api/logout")
+@app.route("/logout")
 def logout():
     if "username" in session:
         # Remove username from session to logout user

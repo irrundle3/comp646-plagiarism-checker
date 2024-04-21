@@ -6,7 +6,7 @@ import model
 student_document_bp = Blueprint('student_document', __name__)
 
 # Define route to get the documents associated with a class ID for the logged-in user
-@student_document_bp.route("/api/documents/<id>", methods=["GET"])
+@student_document_bp.route("/documents/<id>", methods=["GET"])
 def get_documents(id: str):
     if "username" not in session:
         # Return unauthorized error if user is not logged in
@@ -20,7 +20,7 @@ def get_documents(id: str):
     return files
 
 # Define route to download a document associated with a class ID for the logged-in user
-@student_document_bp.route("/api/download/<id>/<document>", methods=["GET"])
+@student_document_bp.route("/download/<id>/<document>", methods=["GET"])
 def download(id: str, document: str):
     if "username" not in session:
         # Return unauthorized error if user is not logged in
@@ -33,7 +33,7 @@ def download(id: str, document: str):
     return {}
 
 # Define route to get the text content of a document associated with a class ID for the logged-in user
-@student_document_bp.route("/api/text/<id>/<document>", methods=["GET"])
+@student_document_bp.route("/text/<id>/<document>", methods=["GET"])
 def get_text(id: str, document: str):
     if "username" not in session:
         # Return unauthorized error if user is not logged in
@@ -48,7 +48,7 @@ def get_text(id: str, document: str):
     abort(404, description="File not found")
 
 # Define route to get matches of a document associated with a class ID for the logged-in user
-@student_document_bp.route("/api/matches/<id>/<document>", methods=["GET"])
+@student_document_bp.route("/matches/<id>/<document>", methods=["GET"])
 def get_matches(id: str, document: str):
     if "username" not in session:
         # Return unauthorized error if user is not logged in
