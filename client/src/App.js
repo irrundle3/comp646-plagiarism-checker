@@ -12,7 +12,7 @@ import Logout from './pages/logout';
 import Navbar from './components/navbar';
 import StudentRegister from './pages/student_register';
 import TeacherRegister from './pages/teacher_register';
-import ClassMenu from './pages/class_menu';
+import StudenClassView from './pages/student_class_menu';
 import Box from '@mui/material/Box';
 import DisplayDocument from './pages/display_document';
 import './App.css';
@@ -52,7 +52,7 @@ function App() {
           <Route exact path="/logout" element={<Logout setActiveUser={setActiveUser}/>}></Route>
           <Route exact path="/student/register" element={<StudentRegister setActiveUser={setActiveUser}/>}></Route>
           <Route exact path="/teacher/register" element={<TeacherRegister setActiveUser={setActiveUser}/>}></Route>
-          <Route path = "/class/:cid" element={<ClassMenu />}></Route>
+          <Route path="/student/class/:classId" element={<StudenClassView setActiveUser={setActiveUser} />} />
           <Route path = "/class/:cid/document/:document" element={<DisplayDocument />}></Route>
         </Routes>
       </Router>

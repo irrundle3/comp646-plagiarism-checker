@@ -8,6 +8,7 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 sentences = {}
 
 def add_file_to_db(username, class_id, document):
+    
     text = get_text(username, class_id, document)
     if username not in sentences:
         sentences[username] = {}
