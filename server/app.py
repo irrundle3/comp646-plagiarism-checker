@@ -53,20 +53,19 @@ def exit_handler():
 # Register exit handler
 atexit.register(exit_handler)
 
-if __name__ == "__main__":
-    # To avoid the application context error, run the Flask application within the application context
-    with app.app_context():
-        # Create all database tables
-        db.create_all()
-        # db.drop_all()
-        #     # Recreate all tables
-        # db.create_all()
-        # Use SQLAlchemy's inspect module to check if the Student table exists
-        inspector = inspect(db.engine)
-        if 'Student' in inspector.get_table_names():
-            print("Student table successfully created!")
-        else:
-            print("Student table creation failed!")
+# To avoid the application context error, run the Flask application within the application context
+with app.app_context():
+    # Create all database tables
+    db.create_all()
+    # db.drop_all()
+    #     # Recreate all tables
+    # db.create_all()
+    # Use SQLAlchemy's inspect module to check if the Student table exists
+    inspector = inspect(db.engine)
+    if 'Student' in inspector.get_table_names():
+        print("Student table successfully created!")
+    else:
+        print("Student table creation failed!")
 
-        # Run the Flask application
-        app.run()
+    # Run the Flask application
+    app.run()

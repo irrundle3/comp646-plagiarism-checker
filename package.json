@@ -4,7 +4,7 @@
   "description": "A web application that detects if a student's submission has similar writing style or document structure as other students' submissions.",
   "main": "index.js",
   "scripts": {
-    "server": "cd server && pip install flask-sqlalchemy sqlalchemy && flask run --port 4000",
+    "server": "cd server && flask run --port 4000 --reload",
     "client": "cd client && npm start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

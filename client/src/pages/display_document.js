@@ -43,6 +43,10 @@ export default function DisplayDocument({ setActiveUser }) {
     validateLogin();
   }, [username, classId]);
 
+  useEffect(() => {
+    
+  })
+
   return (
     <Box justifyContent="center" sx={{ width: '90%', m: '1rem' }}>
       <Button variant="outlined" sx={{ my: '10' }} href={`/student/class/${classId}`} startIcon={<ArrowBackIosNewIcon />}>

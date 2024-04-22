@@ -97,7 +97,9 @@ def get_text():
     # user_files/1_files/tg/Science essay
 
     if file_path is not None and os.path.isfile(file_path):
-        text = ". ".join(model._get_sentences(file_path))
+        text = ". ".join(model.get_sentences(file_path, filter=False))
+        text += "\n\n" + str(model.get_file_data(file_path))
+        text += "\n\n" + str(model.find_matches(file_path))
         return jsonify({"text": text})
     abort(404, description="File not found")
 
@@ -142,6 +144,31 @@ def upload_file():
     model.add_file_to_db(file_path, class_id, student.id)
 
     return jsonify({'status': 'File uploaded successfully'}), 200
+
+@student_document_bp.route("/student/document/matches/", methods=["GET"])
+def get_matches():
+    student_username = request.args.get('student_username')
+    class_id = request.args.get('class_id')
+    document = request.args.get('document_name')
+    print(document)
+
+    if not student_username:
+        return jsonify({'error': 'No student username provided'}), 400
+
+    if not class_id:
+        return jsonify({'error': 'No class ID provided'}), 400
+    
+    if not document:
+        return jsonify({'error': 'Document provided'}), 400
+
+    # Ensure the document name doesn't contain potentially malicious characters
+    if '..' in document or '/' in document or '\\' in document:
+        return jsonify({'error': 'Invalid document name'}), 400
+    
+    file_path = f"user_files/{class_id}_files/{student_username}/{document}"
+    print("ejfijefi")
+    print(file_path)
+
 
 # # Define route to get matches of a document associated with a class ID for the logged-in user
 # @student_document_bp.route("/matches/<id>/<document>", methods=["GET"])

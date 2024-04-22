@@ -50,6 +50,7 @@ export default function AddClass({ setActiveUser }) {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        console.log('hi');
         const data = new FormData(event.currentTarget);
         const class_name = data.get('class-id');
         const requestOptions = {
@@ -60,6 +61,7 @@ export default function AddClass({ setActiveUser }) {
                 class_name: class_name
             })
         };
+        console.log(requestOptions);
         
         try {
             const response = await fetch('/api/teacher/home', requestOptions);
@@ -91,16 +93,12 @@ export default function AddClass({ setActiveUser }) {
                 onSubmit={handleSubmit}
             >
                 <TextField id="class-id" name="class-id" label="Class Name" variant="outlined" />
-                <Button
-                    type="submit"
-                    fullWidth
-                    sx={{ mt: 3, mb: 2 }}
-                >
-                    <Fab variant="extended" size="medium" color="primary">
-                        <AddIcon sx={{ mr: 1 }} />
-                        Add class
-                    </Fab>
-                </Button>
+                <Fab variant="extended" size="medium" color="primary" type="submit"
+                fullWidth
+                sx={{ mt: 3, mb: 2 }}>
+                    <AddIcon sx={{ mr: 1 }} />
+                    Add class
+                </Fab>
             </Box>
         </Box>
     );

@@ -105,12 +105,10 @@ export default function AddStudent({ setActiveUser }) {
           label="Student Username"
           variant="outlined"
         />
-        <Button type="submit" fullWidth sx={{ mt: 3, mb: 2 }}>
-          <Fab variant="extended" size="medium" color="primary">
-            <AddIcon sx={{ mr: 1 }} />
-            Add Student
-          </Fab>
-        </Button>
+        <Fab variant="extended" size="medium" color="primary" type="submit" fullWidth sx={{ mt: 3, mb: 2 }}>
+          <AddIcon sx={{ mr: 1 }} />
+          Add Student
+        </Fab>
       </Box>
     </Box>
   );
