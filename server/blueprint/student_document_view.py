@@ -6,7 +6,6 @@ from user_models import  Class, Teacher, Student
 
 student_document_bp = Blueprint('student_document', __name__)
 
-# Define route to get the documents associated with a class ID for the logged-in user
 @student_document_bp.route("/student/document", methods=["GET"])
 def get_documents():
     student_username = request.args.get('student_username')
@@ -27,20 +26,21 @@ def get_documents():
 
     if not class_:
         return jsonify({'error': 'Class not found'}), 404
+
     file_path = f"user_files/{class_id}_files/{student_username}"
     
     try:
         if os.path.isdir(file_path):
-            files = os.listdir(file_path)
-            # Exclude hidden files and directories
-            files = [file for file in files if not file.startswith('.')]
+            # Get all files, including full filenames with extensions
+            files = [file for file in os.listdir(file_path) if not file.startswith('.')]
+            print(files)
         else:
             files = []
-
     
     except Exception as e:
         return jsonify({'error': f"An error occurred while accessing files: {str(e)}"}), 500
-    # return jsonify({'files': files}), 200
+    
+    # Return the full filenames with extensions in the response
     return files
 
 
@@ -71,22 +71,31 @@ def download(document: str):
         return jsonify({'error': f"An error occurred while accessing the file: {str(e)}"}), 500
 
 # Define route to get the text content of a document associated with a class ID for the logged-in user
-@student_document_bp.route("/student/document/text/<document>", methods=["GET"])
-def get_text( document: str):
+@student_document_bp.route("/student/document/text", methods=["GET"])
+def get_text():
     student_username = request.args.get('student_username')
     class_id = request.args.get('class_id')
+    document = request.args.get('document_name')
+    print(document)
 
     if not student_username:
         return jsonify({'error': 'No student username provided'}), 400
 
     if not class_id:
         return jsonify({'error': 'No class ID provided'}), 400
+    
+    if not document:
+        return jsonify({'error': 'Document provided'}), 400
 
     # Ensure the document name doesn't contain potentially malicious characters
     if '..' in document or '/' in document or '\\' in document:
         return jsonify({'error': 'Invalid document name'}), 400
     
     file_path = f"user_files/{class_id}_files/{student_username}/{document}"
+    print("ejfijefi")
+    print(file_path)
+    # /Users/jonathanmak/comp321/comp646-plagiarism-checker/server/user_files/1_files/tg/Science essay #2.docx
+    # user_files/1_files/tg/Science essay
 
     file_path = path_to_txt(file_path)
 
@@ -113,21 +122,17 @@ def upload_file():
         return jsonify({'error': 'No class ID provided'}), 400
     
     # Get the uploaded file
-    print("hello1")
     file = request.files["file"]
 
     # Ensure directory structure exists
-    print("hello2")
     base_dir = "user_files"
     class_dir = f"{base_dir}/{class_id}_files"
     student_dir = f"{class_dir}/{student_username}"
-    print("hello3")
     if not os.path.exists(class_dir):
         os.mkdir(class_dir)
     
     if not os.path.exists(student_dir):
         os.mkdir(student_dir)
-    print("hello4")
     # Save the file with its original name
     file_path = os.path.join(student_dir, file.filename)
     file.save(file_path)

@@ -19,7 +19,6 @@ export default function ClassMenu({ setActiveUser }) {
         const response = await fetch(`/api/student/document?student_username=${username}&class_id=${class_id}`);
         if (response.ok) {
             const docList = await response.json();
-            
             if (Array.isArray(docList)) {  // Ensure it's an array
                 updateDocuments(docList);
             } else {
@@ -41,9 +40,6 @@ export default function ClassMenu({ setActiveUser }) {
               setUsername(data.username);
               
               setActiveUser(data.username);
-              console.log(username)
-              console.log(data.username)
-              console.log(classId)
             } catch (error) {
               console.error("Error parsing JSON:", error);
               // Handle the error, e.g., show a message to the user
@@ -107,7 +103,7 @@ export default function ClassMenu({ setActiveUser }) {
         <Box component="section">
             <h1>{classId}</h1>
             <Grid container spacing={2}>
-            {docs.map((filename) => (<Grid item key={filename} xs={12}><Link href={"/class/" + classId + "/document/" + filename}>{filename}</Link></Grid>))}
+            {docs.map((filename) => (<Grid item key={filename} xs={12}><Link href={"/student/class/" + classId + "/document/" + filename}>{filename}</Link></Grid>))}
             </Grid>
             <Box
                 component="form"
