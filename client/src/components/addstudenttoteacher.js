@@ -7,6 +7,7 @@ import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
 
 export default function AddStudent({ setActiveUser }) {
   const [students, setStudentList] = useState([]);
@@ -78,10 +79,14 @@ export default function AddStudent({ setActiveUser }) {
 
   return (
     <Box component="section">
+      <Typography variant="h7" gutterBottom>
+        List of Students:
+        
+      </Typography>
       <Grid container spacing={2}>
         {students.map((c) => (
           <Grid item key={c.id} xs={6}>
-            <Link href={`/class/${c.id}`}>{c.name}</Link>
+            <div>{c.name}</div>
           </Grid>
         ))}
       </Grid>
@@ -94,19 +99,19 @@ export default function AddStudent({ setActiveUser }) {
         autoComplete="off"
         onSubmit={handleSubmit}
       >
-        <TextField id="student-username" name="student-username" label="Student Username" variant="outlined" />
-        <Button
-          type="submit"
-          fullWidth
-          sx={{ mt: 3, mb: 2 }}
-        >
+        <TextField
+          id="student-username"
+          name="student-username"
+          label="Student Username"
+          variant="outlined"
+        />
+        <Button type="submit" fullWidth sx={{ mt: 3, mb: 2 }}>
           <Fab variant="extended" size="medium" color="primary">
             <AddIcon sx={{ mr: 1 }} />
             Add Student
           </Fab>
         </Button>
       </Box>
-
     </Box>
   );
 }

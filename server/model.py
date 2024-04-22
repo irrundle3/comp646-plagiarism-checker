@@ -4,6 +4,7 @@ import os
 import docx2txt
 from app import db
 from lshashpy3 import LSHash
+import re
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -25,7 +26,7 @@ def _get_sentences(path: os.PathLike):
     elif ext == "txt":
         with open(path, 'rb') as infile:
             doc = infile.read()
-    return [sentence for sentence in doc.split('. ') if len(sentence) > 15]
+    return [sentence for sentence in re.split(r'\n|\. ', doc) if len(sentence) > 20]
 
 def add_file_to_db(path, class_id, student_id):
     text = _get_sentences(path)
