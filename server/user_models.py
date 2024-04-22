@@ -1,3 +1,5 @@
+import sys
+print(sys.version)
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import ARRAY
 
@@ -19,7 +21,7 @@ class Student(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     classes_enrolled = db.relationship('Class', secondary='enrollment', backref='students_enrolled', lazy='dynamic')
-    teachers = db.relationship('Teacher', secondary='teacher_student_association', backref='teachers', lazy='dynamic')
+    teachers = db.relationship('Teacher', secondary='teacher_student_association', backref='students', lazy='dynamic')
 
 class Teacher(db.Model):
     __tablename__ = 'Teacher'
@@ -27,7 +29,7 @@ class Teacher(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     classes_taught = db.relationship('Class', backref='taught_by_teacher', lazy=True)
-    students = db.relationship('Student', secondary='teacher_student_association', backref='students', lazy='dynamic')
+    students = db.relationship('Student', secondary='teacher_student_association', backref='teachers', lazy='dynamic')
 
 class Class(db.Model):
     __tablename__ = 'Class'
@@ -36,3 +38,12 @@ class Class(db.Model):
     teacher_id = db.Column(db.Integer, db.ForeignKey('Teacher.id'), nullable=False)
     teacher = db.relationship('Teacher', backref='classes', lazy=True)
     enrolled_students = db.relationship('Student', secondary='enrollment', backref='enrolled_classes', lazy='dynamic')
+
+class UploadedFile(db.Model):
+    __tablename__ = "File"
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('Student.id'), nullable=False)
+    class_id = db.Column(db.Integer, db.ForeignKey('Class.id'), nullable=False)
+    path = db.Column(db.String(100), nullable=False)
+    embedding = db.Column(db.LargeBinary, nullable=False)
+    sentences = db.Column(db.LargeBinary, nullable=False)

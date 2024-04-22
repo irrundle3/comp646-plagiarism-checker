@@ -1,6 +1,5 @@
 from flask import request, Blueprint, jsonify, session, abort
 import os
-from preprocessing import to_txt
 import model
 from user_models import  Class, Teacher, Student
 
@@ -37,10 +36,14 @@ def add_class_id(id: str):
 # Define route to upload a file associated with a class ID for the logged-in user
 @student_home_bp.route("/upload/<id>", methods=["POST"])
 def upload_file(id: str):
-    if "username" not in session:
+    if ("username" not in session):
         # Return unauthorized error if user is not logged in
         abort(401, description="Unauthorized: Invalid credentials")
-        return {}
+    student = Student.query.filter_by(username=session["username"]).first()
+    class_obj = Class.query.filter_by(id=id).first()
+    if class_obj not in student.classes_enrolled:
+        abort(401, description="Unauthorized: Invalid credentials")
+    
     file = request.files["file"]
     dirs = [item for item in os.listdir("user_files") if os.path.isdir(f"user_files/{item}")]
     if f"{session['username']}_files" not in dirs:
@@ -48,10 +51,10 @@ def upload_file(id: str):
     dirs = [item for item in os.listdir(f"user_files/{session['username']}_files") if os.path.isdir(f"user_files/{session['username']}_files/{item}")]
     if id not in dirs:
         os.mkdir(f"user_files/{session['username']}_files/{id}")
+
     filename = os.path.join(f"user_files/{session['username']}_files/{id}", file.filename)
     file.save(filename)
-    to_txt(filename)
-    model.add_file_to_db(session["username"], id, filename.split("/")[-1])
+    model.add_file_to_db(filename, id, student.id)
     return {"id": id}
 
 

@@ -1,6 +1,5 @@
 from flask import request, Blueprint, jsonify, session, abort, send_file
 import os
-from preprocessing import path_to_txt
 import model
 
 student_document_bp = Blueprint('student_document', __name__)
@@ -40,11 +39,9 @@ def get_text(id: str, document: str):
         abort(401, description="Unauthorized: Invalid credentials")
         return {}
     file_path = f"user_files/{session['username']}_files/{id}/{document}"
-    file_path = path_to_txt(file_path)
     if file_path is not None and os.path.isfile(file_path):
-        with open(file_path, "r") as file:
-            text = file.read()
-            return jsonify({"text": text})
+        text = model._get_sentences(file_path)
+        return jsonify({"text": text})
     abort(404, description="File not found")
 
 # Define route to get matches of a document associated with a class ID for the logged-in user
