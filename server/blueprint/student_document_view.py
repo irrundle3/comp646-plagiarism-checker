@@ -98,8 +98,8 @@ def get_text():
 
     if file_path is not None and os.path.isfile(file_path):
         text = model.read_doc(file_path)
-        text += "\n\n" + str(model.find_matches(file_path))
-        return jsonify({"text": text})
+        matches = model.find_matches(file_path)
+        return jsonify({"text": text, "matches":matches})
     abort(404, description="File not found")
 
 @student_document_bp.route("/student/document/upload/", methods=["POST"])
@@ -144,7 +144,7 @@ def upload_file():
 
     return jsonify({'status': 'File uploaded successfully'}), 200
 
-@student_document_bp.route("/student/document/matches/", methods=["GET"])
+@student_document_bp.route("/student/document/matches", methods=["GET"])
 def get_matches():
     student_username = request.args.get('student_username')
     class_id = request.args.get('class_id')
@@ -165,8 +165,9 @@ def get_matches():
         return jsonify({'error': 'Invalid document name'}), 400
     
     file_path = f"user_files/{class_id}_files/{student_username}/{document}"
-    print("ejfijefi")
-    print(file_path)
+    matches = model.find_matches(file_path)
+    print(matches)
+    return jsonify({'status': 'File uploaded successfully'}), 200
 
 
 # # Define route to get matches of a document associated with a class ID for the logged-in user

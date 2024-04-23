@@ -34,8 +34,6 @@ def add_class_id(id: str):
     return {"id": id}
 
 
-
-
 @student_home_bp.route("/student/classes", methods=["GET"])
 def get_student_classes():
     student_username = request.args.get('student_username')

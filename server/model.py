@@ -18,7 +18,7 @@ student_ids = []
 
 SIMILARITY_THRESHOLD = 0.8
 CHUNK_INTERVAL = 10 # Num words each chunk shifts
-CHUNK_LENGTH = 50 # Num words in a chunk
+CHUNK_LENGTH = 100 # Num words in a chunk
 
 def _index_sentence(embedding, sentence, pos, file_id, student_id):
     global sentences, poses, file_ids, student_ids, annoy
@@ -33,10 +33,10 @@ def build_similarity_search():
     annoy = AnnoyIndex(384, "dot")
     sentences, poses, file_ids, student_ids = [], [], [], []
     for file in UploadedFile.query.all():
-        embeddings = np.frombuffer(file.embedding).reshape(-1, 384)
-        sentences2 = get_sentences(file.path)
+        embeddings = np.frombuffer(file.embedding, dtype="float32").reshape(-1, 384)
+        sentences2, poses2 = get_sentences(file.path)
         for i, emb in enumerate(embeddings):
-            _index_sentence(emb, sentences2[i], i, file.id, file.student_id)
+            _index_sentence(emb, sentences2[i], poses2[i], file.id, file.student_id)
     annoy.build(10, n_jobs=-1) # Uses all cpus possible
 
 def read_doc(path: os.PathLike):
@@ -53,40 +53,39 @@ def get_sentences(path: os.PathLike):
     doc = read_doc(path)
     doc = doc.replace("\n", " ").split(" ")
     chunks = []
+    poses = []
     for i in range(0, len(doc), CHUNK_INTERVAL):
         chunks.append(" ".join(doc[i:min(i+CHUNK_LENGTH,len(doc))]))
+        poses.append((i, min(i + CHUNK_LENGTH, len(doc))))
         if i+CHUNK_LENGTH >= len(doc):
             break
-    return chunks
+    return chunks, poses
 
-
-def get_file_data(path: os.PathLike):
-    file = UploadedFile.query.filter_by(path = path).first()
-    return {"student_id": file.student_id, "embedding": np.frombuffer(file.embedding)}
 
 def add_file_to_db(path, class_id, student_id):
-    text = get_sentences(path)
+    text, _ = get_sentences(path)
     embeddings = model.encode(text, convert_to_numpy=True)
-    fileobj = UploadedFile(student_id=student_id, class_id=class_id, embedding=embeddings.tobytes(), path=path)
+    bts = embeddings.tobytes()
+    fileobj = UploadedFile(student_id=student_id, class_id=class_id, embedding=bts, path=path)
     db.session.add(fileobj)
     db.session.commit()
-    build_similarity_search()
 
 
 def find_matches(path: os.PathLike):
+    build_similarity_search()
     file = UploadedFile.query.filter_by(path = path).first()
-    matches = []
-    data = np.frombuffer(file.embedding).reshape(-1, 384)
-    for emb in data:
-        emb_sim = []
-        for id, distance in zip(*annoy.get_nns_by_vector(emb, 2, include_distances=True)):
-            # if distance < SIMILARITY_THRESHOLD:
-            #     break
-            # if extra_data["student_id"][id] != file.student_id:
-            emb_sim.append(f"{distance} : {sentences[id]}")
-        matches.append("\n".join(emb_sim))
-        break
-    return "\n" + "\n".join(matches)
+    matches = {}
+    chunks, original_poses = get_sentences(path)
+    data = np.frombuffer(file.embedding, dtype="float32").reshape((-1, 384))
+    for idx, emb in enumerate(data):
+        emb_sim = {}
+        for id, distance in zip(*annoy.get_nns_by_vector(emb, 100, include_distances=True)):
+            if distance < SIMILARITY_THRESHOLD:
+                break
+            if student_ids[id] != file.student_id:
+                emb_sim[sentences[id]] = [distance, poses[id], student_ids[id]]
+        matches[chunks[idx]] = [emb_sim, original_poses[idx]]
+    return matches
                     
                     
 # sentence_embeddings = model.encode(sentences, convert_to_tensor=True)

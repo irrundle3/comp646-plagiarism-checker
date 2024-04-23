@@ -16,6 +16,7 @@ export default function DisplayDocument({ setActiveUser }) {
     if (response.ok) {
       const data = await response.json();
       setDocData(data.text || ""); // Handle missing data
+      setMatches(data.matches);
     } else {
       console.error("Failed to fetch documents:", response.statusText);
     }
@@ -39,13 +40,9 @@ export default function DisplayDocument({ setActiveUser }) {
         window.location.replace("/login");
       }
     }
-
     validateLogin();
   }, [username, classId]);
 
-  useEffect(() => {
-    
-  })
 
   return (
     <Box justifyContent="center" sx={{ width: '90%', m: '1rem' }}>
@@ -56,7 +53,16 @@ export default function DisplayDocument({ setActiveUser }) {
         {docData || "No document found"} {/* Fallback content */}
       </Typography>
       <Typography variant="body2" gutterBottom>
-        {matches || "No matches found"} {/* Fallback content */}
+        { Object.entries(matches).map(([original_sentence, data]) => {
+          return (
+            <div>
+              <p><strong>Original sentence = {original_sentence}</strong></p>
+              {Object.entries(data[0]).map(([similar_sentence, metrics]) => {
+                return <p>Similar sentence: {similar_sentence} <br></br> Similarity: {metrics[0]}</p>
+              })}
+            </div>
+          )
+        }) || "No matches found"} {/* Fallback content */}
       </Typography>
     </Box>
   );

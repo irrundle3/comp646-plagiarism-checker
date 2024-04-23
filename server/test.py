@@ -26,6 +26,11 @@ extra_data = pd.DataFrame(columns=["sentence", "pos", "file_id", "student_id"])
 
 
 print(len(embeddings), "embeddings")
+print(embeddings.dtype)
+print(embeddings)
+embeddings = embeddings.tobytes()
+embeddings = np.frombuffer(embeddings, dtype="float32").reshape((-1, 384))
+print(embeddings)
 for i, emb in enumerate(embeddings):
     extra_data.loc[len(extra_data.index)] = [text[i], i, 4, 4]
     annoy.add_item(annoy.get_n_items(), emb)
