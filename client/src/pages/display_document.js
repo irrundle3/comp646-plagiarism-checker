@@ -2,62 +2,81 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import Button from '@mui/material/Button';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 
 export default function DisplayDocument({ setActiveUser }) {
   const { classId, document } = useParams();
   const [username, setUsername] = useState("");
-  const [docData, setDocData] = useState(""); // Ensure this is a string
-  const [matches, setMatches] = useState(""); // Ensure this is a string
+  const [docData, setDocData] = useState(""); // Document text data
+  const [matches, setMatches] = useState(""); // Matches or related information
 
-  async function viewDocument(username, class_id, document) {
-    const response = await fetch(`/api/student/document/text?student_username=${username}&class_id=${class_id}&document_name=${document}`);
-    if (response.ok) {
-      const data = await response.json();
-      setDocData(data.text || ""); // Handle missing data
-    } else {
-      console.error("Failed to fetch documents:", response.statusText);
+  async function viewDocument(username, classId, document) {
+    try {
+      const response = await fetch(`/api/student/document/text?student_username=${username}&class_id=${classId}&document_name=${document}`);
+      if (response.ok) {
+        const data = await response.json();
+        setDocData(data.text || ""); // Handle missing data
+      } else {
+        console.error("Failed to fetch document:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error while fetching document:", error);
     }
   }
 
   useEffect(() => {
     async function validateLogin() {
-      const response = await fetch("/api/student/login", {
-        method: "GET",
-      });
+      const response = await fetch("/api/student/login", { method: "GET" });
       if (response.ok) {
         const data = await response.json();
         setUsername(data.username);
         setActiveUser(data.username);
         
         if (username && classId) {
-          viewDocument(username, classId, document); // Call only when both are defined
+          viewDocument(username, classId, document); // Fetch the document text
         }
       } else {
-        console.error("Response not OK:", response.status);
+        console.error("Login validation failed:", response.status);
         window.location.replace("/login");
       }
     }
 
     validateLogin();
-  }, [username, classId]);
-
-  useEffect(() => {
-    
-  })
+  }, [setActiveUser, username, classId, document]);
 
   return (
-    <Box justifyContent="center" sx={{ width: '90%', m: '1rem' }}>
-      <Button variant="outlined" sx={{ my: '10' }} href={`/student/class/${classId}`} startIcon={<ArrowBackIosNewIcon />}>
-        Back
-      </Button>
-      <Typography variant="body1" gutterBottom>
-        {docData || "No document found"} {/* Fallback content */}
-      </Typography>
-      <Typography variant="body2" gutterBottom>
-        {matches || "No matches found"} {/* Fallback content */}
-      </Typography>
+    <Box sx={{ padding: '2rem' }}>
+      <Card>
+        <CardContent>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIosNewIcon />}
+            href={`/student/class/${classId}`}
+            sx={{ marginBottom: '1rem' }}
+          >
+            Back to Class
+          </Button>
+          
+          <Typography variant="h6" gutterBottom>
+            Document Content
+          </Typography>
+
+          <Typography variant="body1" gutterBottom>
+            {docData || "No document content available"}
+          </Typography>
+          
+          <Typography variant="h6" gutterBottom>
+            Related Information
+          </Typography>
+
+          <Typography variant="body2" gutterBottom>
+            {matches || "No related information found"}
+          </Typography>
+        </CardContent>
+      </Card>
     </Box>
   );
 }

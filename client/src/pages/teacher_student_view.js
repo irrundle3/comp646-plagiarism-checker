@@ -1,73 +1,101 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useParams } from 'react-router-dom'
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function ClassMenu({ setActiveUser }) {
-    const { classId,studentName } = useParams();
-    const [username, setUsername] = useState("");
+  const { classId, studentName } = useParams();
+  const [username, setUsername] = useState("");
+  const [docs, setDocs] = useState(null); // Default to null to indicate loading state
 
-
-    const [docs, updateDocuments] = useState([]);
-    const fileInputRef = useRef(); 
-
-    async function fillDocumentList(username, class_id) {
-        const response = await fetch(`/api/student/document?student_username=${username}&class_id=${class_id}`);
-        if (response.ok) {
-            const docList = await response.json();
-            if (Array.isArray(docList)) {  // Ensure it's an array
-                updateDocuments(docList);
-            } else {
-                console.error("Response is not an array:", docList);
-            }
+  async function fetchDocuments(studentUsername, classId) {
+    try {
+      const response = await fetch(`/api/student/document?student_username=${studentUsername}&class_id=${classId}`);
+      if (response.ok) {
+        const docList = await response.json();
+        if (Array.isArray(docList)) {
+          setDocs(docList);
         } else {
-            console.error("Failed to fetch documents:", response.statusText);
+          console.error("Document list is not an array:", docList);
         }
+      } else {
+        console.error("Failed to fetch documents:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching documents:", error.message);
+    }
+  }
+
+  useEffect(() => {
+    async function validateLogin() {
+      try {
+        const response = await fetch("/api/teacher/login", { method: "GET" });
+        if (response.ok) {
+          const data = await response.json();
+          setUsername(data.username);
+          setActiveUser(data.username);
+
+          if (studentName && classId) {
+            fetchDocuments(studentName, classId);
+          }
+        } else {
+          console.error("Login validation failed:", response.status);
+          window.location.replace("/login");
+        }
+      } catch (error) {
+        console.error("Error during login validation:", error.message);
+      }
     }
 
-    useEffect(() => {
-        async function validateLogin() {
-          const response = await fetch("/api/teacher/login", {
-            method: "GET",
-          });
-          if (response.ok) {
-            try {
-              const data = await response.json();
-              setUsername(data.username);
-              
-              setActiveUser(data.username);
-            } catch (error) {
-              console.error("Error parsing JSON:", error);
-              // Handle the error, e.g., show a message to the user
-            }
-          } else {
-            console.error("Response not OK:", response.status);
-            // Handle the error, e.g., redirect to login
-            window.location.replace("/login");
-          }
-        }
-        
-        validateLogin()
-          .then(() => {
-            if (username && classId) {
-              fillDocumentList(studentName, classId);  // Call only when both are defined
-            } else {
-              console.error("Username or Class ID is missing.");
-            }
-          });
-      }, [username, classId]);  // Dependence on state changes
+    validateLogin();
+  }, [setActiveUser, studentName, classId]);
 
-    return (
-        <Box component="section">
-            <h1>{classId}</h1>
+  return (
+    <Box
+      sx={{
+        padding: '1rem', // Add some padding
+        display: 'flex',
+        justifyContent: 'center',
+      }}
+    >
+      <Card sx={{ width: '80%' }}>
+        <CardContent>
+          <Typography variant="h5" gutterBottom>
+            Class ID: {classId}
+          </Typography>
+
+          <Typography variant="h6" gutterBottom>
+            Documents:
+          </Typography>
+
+          {docs === null ? (
+            <Box sx={{ textAlign: 'center' }}>
+              <CircularProgress />
+              <Typography variant="body1" sx={{ marginTop: 2 }}>
+                Loading documents...
+              </Typography>
+            </Box>
+          ) : (
             <Grid container spacing={2}>
-            {docs.map((filename) => (<Grid item key={filename} xs={12}><Link href={"/teacher/class/" + classId + "/" + studentName+"/document/" + filename}>{filename}</Link></Grid>))}
+              {docs.map((filename) => (
+                <Grid item key={filename} xs={12}>
+                  <Link
+                    href={`/teacher/class/${classId}/${studentName}/document/${filename}`}
+                    underline="hover"
+                  >
+                    {filename}
+                  </Link>
+                </Grid>
+              ))}
             </Grid>
-            
-        </Box>
-    );
+          )}
+        </CardContent>
+      </Card>
+    </Box>
+  );
 }
