@@ -79,7 +79,7 @@ export default function AddClass({ setActiveUser }) {
             <Grid container spacing={2}>
                 {classes.map((c) => (
                     <Grid item key={c.id} xs={6}>
-                        <Link href={"/class/" + c.id}>{c.name}</Link>
+                        <Link href={"class/" + c.id}>{c.name}</Link>
                     </Grid>
                 ))}
             </Grid>

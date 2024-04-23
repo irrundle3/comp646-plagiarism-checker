@@ -165,7 +165,7 @@ def get_matches():
         return jsonify({'error': 'Invalid document name'}), 400
     
     file_path = f"user_files/{class_id}_files/{student_username}/{document}"
-    print("ejfijefi")
+    # print("ejfijefi")
     print(file_path)
 
 
