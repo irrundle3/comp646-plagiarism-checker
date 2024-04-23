@@ -6,7 +6,7 @@ import os
 import atexit
 import shutil
 from sqlalchemy import inspect
-from user_models import db
+from user_models import db, UploadedFile
 from blueprint.student_auth import student_auth_bp
 from blueprint.student_home import student_home_bp
 from blueprint.student_document_view import student_document_bp
@@ -47,6 +47,7 @@ def logout():
 def exit_handler():
     if os.path.exists("user_files/"):
         shutil.rmtree("user_files/")
+        UploadedFile.query.delete()
     else:
         print("user_files directory does not exist.")
 

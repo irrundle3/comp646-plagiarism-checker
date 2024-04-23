@@ -3,21 +3,49 @@ from user_models import UploadedFile
 import os
 import docx2txt
 from app import db
-from lshashpy3 import LSHash
+from annoy import AnnoyIndex
 import re
 import numpy as np
+import pandas as pd
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-hasher = LSHash(hash_size=4, input_dim=384, num_hashtables=1,
-    storage_config={ 'dict': None },
-    # matrices_filename='weights.npz', 
-    # hashtable_filename='hash.npz'
-)
+annoy = AnnoyIndex(384, "dot")
+sentences = []
+poses = []
+file_ids = []
+student_ids = []
 
 SIMILARITY_THRESHOLD = 0.8
+CHUNK_INTERVAL = 10 # Num words each chunk shifts
+CHUNK_LENGTH = 50 # Num words in a chunk
 
-def get_sentences(path: os.PathLike, filter=True):
+def _index_sentence(embedding, sentence, pos, file_id, student_id):
+    global sentences, poses, file_ids, student_ids, annoy
+    print(sentences, poses, file_ids, student_ids, annoy)
+    sentences.append(sentence)
+    poses.append(pos)
+    file_ids.append(file_id)
+    student_ids.append(student_id)
+    print(annoy.get_n_items())
+    print(embedding)
+    print(annoy)
+    annoy.add_item(annoy.get_n_items(), embedding)
+    print(poses, file_ids)
+
+def build_similarity_search():
+    global annoy, sentences, poses, file_ids, student_ids
+    annoy = AnnoyIndex(384, "dot")
+    print(annoy.get_n_items())
+    sentences, poses, file_ids, student_ids = [], [], [], []
+    for file in UploadedFile.query.all():
+        embeddings = np.frombuffer(file.embedding).reshape(-1, 384)
+        sentences2 = get_sentences(file.path)
+        for i, emb in enumerate(embeddings):
+            _index_sentence(emb, sentences2[i], i, file.id, file.student_id)
+    annoy.build(10, n_jobs=-1) # Uses all cpus possible
+
+def read_doc(path: os.PathLike):
     ext = path.split(".")[-1]
     if ext == "docx":
         with open(path, 'rb') as infile:
@@ -25,9 +53,18 @@ def get_sentences(path: os.PathLike, filter=True):
     elif ext == "txt":
         with open(path, 'r') as infile:
             doc = infile.read()
-    if filter:
-        return [sentence for sentence in re.split(r'\n|\. ', doc) if len(sentence) > 15]
-    return re.split(r'\n|\. ', doc)
+    return doc
+
+def get_sentences(path: os.PathLike):
+    doc = read_doc(path)
+    doc = doc.replace("\n", " ").split(" ")
+    chunks = []
+    for i in range(0, len(doc), CHUNK_INTERVAL):
+        chunks.append(" ".join(doc[i:min(i+CHUNK_LENGTH,len(doc))]))
+        if i+CHUNK_LENGTH >= len(doc):
+            break
+    return chunks
+
 
 def get_file_data(path: os.PathLike):
     file = UploadedFile.query.filter_by(path = path).first()
@@ -35,19 +72,14 @@ def get_file_data(path: os.PathLike):
 
 def add_file_to_db(path, class_id, student_id):
     text = get_sentences(path)
-    embeddings = model.encode(text, convert_to_tensor=True)
-    print(embeddings.shape)
-    embeddings = embeddings.numpy()
+    embeddings = model.encode(text, convert_to_numpy=True)
     print(embeddings.shape)
 
     fileobj = UploadedFile(student_id=student_id, class_id=class_id, embedding=embeddings.tobytes(), path=path)
     db.session.add(fileobj)
     db.session.commit()
+    build_similarity_search()
 
-    for i, sentence in enumerate(text):
-        print(embeddings[i].shape)
-        hasher.index(embeddings[i], extra_data={"sentence": sentence, "pos": i, "file_id": fileobj.id, "student_id": fileobj.student_id})
-    hasher.save()
 
 def find_matches(path: os.PathLike):
     file = UploadedFile.query.filter_by(path = path).first()
@@ -56,12 +88,13 @@ def find_matches(path: os.PathLike):
     for emb in data:
         print(emb.shape)
         emb_sim = []
-        print(hasher.query(emb, num_results=2, distance_func="cosine"))
-        for ((vec, extra), similarity) in hasher.query(emb, num_results=2, distance_func="cosine"):
-            if extra["student_id"] != file.student_id and similarity > SIMILARITY_THRESHOLD:
-                emb_sim.append(extra)
-        matches.append(emb_sim)
-    return matches
+        for id, distance in zip(*annoy.get_nns_by_vector(emb, 100, include_distances=True)):
+            if distance < SIMILARITY_THRESHOLD:
+                break
+            # if extra_data["student_id"][id] != file.student_id:
+            emb_sim.append(f"{distance} : {sentences[id]}")
+        matches.append("\n".join(emb_sim))
+    return "\n" + "\n".join(matches)
                     
                     
 # sentence_embeddings = model.encode(sentences, convert_to_tensor=True)

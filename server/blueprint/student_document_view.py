@@ -97,7 +97,7 @@ def get_text():
     # user_files/1_files/tg/Science essay
 
     if file_path is not None and os.path.isfile(file_path):
-        text = ". ".join(model.get_sentences(file_path, filter=False))
+        text = model.read_doc(file_path)
         text += "\n\n" + str(model.get_file_data(file_path))
         text += "\n\n" + str(model.find_matches(file_path))
         return jsonify({"text": text})
