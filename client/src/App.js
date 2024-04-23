@@ -16,6 +16,7 @@ import StudentClassView from './pages/student_class_menu';
 import TeacherClassView from './pages/teacher_class_menu';
 import TeacherStudentView from './pages/teacher_student_view';
 import TeacherDocumentView from './pages/teacher_document_view';
+import WelcomePage from './pages/welcome_page';
 import Box from '@mui/material/Box';
 import StudentDisplayDocument from './pages/display_document';
 import './App.css';
@@ -60,6 +61,7 @@ function App() {
           <Route path="/teacher/class/:classId/:studentName" element={<TeacherStudentView setActiveUser={setActiveUser} />} />
           <Route path="/teacher/class/:classId/:studentName/document/:document" element={<TeacherDocumentView setActiveUser={setActiveUser} />} />
           <Route path = "/student/class/:classId/document/:document" element={<StudentDisplayDocument setActiveUser={setActiveUser} />}></Route>
+          <Route path = "/home" element={<WelcomePage/>}></Route>
         </Routes>
       </Router>
     </Box>
