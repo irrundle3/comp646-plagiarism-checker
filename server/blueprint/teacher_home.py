@@ -96,6 +96,7 @@ def get_teacher_classes():
         }
         class_data.append(class_info)
     return jsonify(class_data)
+
 @teacher_home_bp.route("/teacher/students", methods=["GET"])
 def get_student_classes():
     teacher_username = request.args.get('teacher_username')
@@ -107,6 +108,27 @@ def get_student_classes():
         return jsonify({'error': 'Teacher not found'}), 404
 
     students = teacher.students
+    student_data = []
+    for student_obj in students:
+        student_info = {
+            'id': student_obj.id,
+            'username': student_obj.username,
+            'password': student_obj.password
+        }
+        student_data.append(student_info)
+    return jsonify(student_data)
+
+@teacher_home_bp.route("/teacher/class/students", methods=["GET"])
+def get_student_from_classes():
+    classId = request.args.get('class_id')
+    if not classId:
+        return jsonify({'error': 'No classid provided'}), 400
+
+    class_obj = Class.query.filter_by(id=classId).first()
+    if not class_obj:
+        return jsonify({'error': 'Class not found'}), 404
+
+    students = class_obj.enrolled_students
     student_data = []
     for student_obj in students:
         student_info = {

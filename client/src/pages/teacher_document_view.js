@@ -2,52 +2,54 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 
 export default function DisplayDocument({ setActiveUser }) {
-  const { classId, document } = useParams();
+  const { classId, studentName, document } = useParams();
   const [username, setUsername] = useState("");
-  const [docData, setDocData] = useState(""); // Document text data
-  const [matches, setMatches] = useState(""); // Matches or related information
+  const [docData, setDocData] = useState(null); // Default to null for loading check
+  const [matches, setMatches] = useState(null); // Default to null for loading check
 
-  async function viewDocument(username, classId, document) {
+  async function viewDocument(studentUsername, classId, documentName) {
     try {
-      const response = await fetch(`/api/student/document/text?student_username=${username}&class_id=${classId}&document_name=${document}`);
+      const response = await fetch(`/api/student/document/text?student_username=${studentUsername}&class_id=${classId}&document_name=${documentName}`);
       if (response.ok) {
         const data = await response.json();
-        setDocData(data.text || ""); // Handle missing data
-        setMatches(data.matches);
+        setDocData(data.text || "No document found");
+        setMatches(data.matches || "No matches found");
       } else {
-        console.error("Failed to fetch document:", response.statusText);
+        console.error("Failed to fetch documents:", response.statusText);
       }
     } catch (error) {
-      console.error("Error while fetching document:", error);
+      console.error("Error fetching document:", error);
     }
   }
 
   useEffect(() => {
     async function validateLogin() {
-      const response = await fetch("/api/student/login", { method: "GET" });
+      const response = await fetch("/api/teacher/login", {
+        method: "GET",
+      });
       if (response.ok) {
         const data = await response.json();
         setUsername(data.username);
         setActiveUser(data.username);
-        
-        if (username && classId) {
-          viewDocument(username, classId, document); // Fetch the document text
+
+        if (studentName && classId) {
+          viewDocument(studentName, classId, document);
         }
       } else {
-        console.error("Login validation failed:", response.status);
+        console.error("Failed to validate login:", response.status);
         window.location.replace("/login");
       }
     }
-    validateLogin();
-  }, [setActiveUser, username, classId, document]);
 
-  return (
+    validateLogin();
+  }, [studentName, classId, document, setActiveUser]); // Corrected dependency array
+return (
     <Box sx={{ padding: '2rem' }}>
       <Card>
         <CardContent>
@@ -73,16 +75,7 @@ export default function DisplayDocument({ setActiveUser }) {
           </Typography>
 
           <Typography variant="body2" gutterBottom>
-          { Object.entries(matches).map(([original_sentence, data]) => {
-            return (
-              <div>
-                <p><strong>Original sentence = {original_sentence}</strong></p>
-                {Object.entries(data[0]).map(([similar_sentence, metrics]) => {
-                  return <p>Similar sentence: {similar_sentence} <br></br> Similarity: {metrics[0]}</p>
-                })}
-              </div>
-            )
-          }) || "No matches found"}
+            {matches || "No related information found"}
           </Typography>
         </CardContent>
       </Card>
