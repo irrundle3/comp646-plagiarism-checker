@@ -56,9 +56,6 @@ export default function ClassMenu({ setActiveUser }) {
         <Box sx={{ padding: 3 }}>
             <Card>
                 <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                        Class ID: {classId}
-                    </Typography>
                     
                     <Typography variant="h6" gutterBottom>
                         Students:

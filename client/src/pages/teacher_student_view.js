@@ -65,10 +65,7 @@ export default function ClassMenu({ setActiveUser }) {
     >
       <Card sx={{ width: '80%' }}>
         <CardContent>
-          <Typography variant="h5" gutterBottom>
-            Class ID: {classId}
-          </Typography>
-
+            
           <Typography variant="h6" gutterBottom>
             Documents:
           </Typography>
