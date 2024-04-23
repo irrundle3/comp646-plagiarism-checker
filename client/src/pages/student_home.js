@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Box, Container, Card, CardContent, Button, CircularProgress } from '@mui/material';
+import { Typography, Box, Container, Card, CardContent, CircularProgress } from '@mui/material';
 import AddClass from '../components/addstudentclass';
 
 function Home({ setActiveUser }) {
