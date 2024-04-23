@@ -22,21 +22,15 @@ CHUNK_LENGTH = 50 # Num words in a chunk
 
 def _index_sentence(embedding, sentence, pos, file_id, student_id):
     global sentences, poses, file_ids, student_ids, annoy
-    print(sentences, poses, file_ids, student_ids, annoy)
     sentences.append(sentence)
     poses.append(pos)
     file_ids.append(file_id)
     student_ids.append(student_id)
-    print(annoy.get_n_items())
-    print(embedding)
-    print(annoy)
     annoy.add_item(annoy.get_n_items(), embedding)
-    print(poses, file_ids)
 
 def build_similarity_search():
     global annoy, sentences, poses, file_ids, student_ids
     annoy = AnnoyIndex(384, "dot")
-    print(annoy.get_n_items())
     sentences, poses, file_ids, student_ids = [], [], [], []
     for file in UploadedFile.query.all():
         embeddings = np.frombuffer(file.embedding).reshape(-1, 384)
@@ -73,8 +67,6 @@ def get_file_data(path: os.PathLike):
 def add_file_to_db(path, class_id, student_id):
     text = get_sentences(path)
     embeddings = model.encode(text, convert_to_numpy=True)
-    print(embeddings.shape)
-
     fileobj = UploadedFile(student_id=student_id, class_id=class_id, embedding=embeddings.tobytes(), path=path)
     db.session.add(fileobj)
     db.session.commit()
@@ -86,14 +78,14 @@ def find_matches(path: os.PathLike):
     matches = []
     data = np.frombuffer(file.embedding).reshape(-1, 384)
     for emb in data:
-        print(emb.shape)
         emb_sim = []
-        for id, distance in zip(*annoy.get_nns_by_vector(emb, 100, include_distances=True)):
-            if distance < SIMILARITY_THRESHOLD:
-                break
+        for id, distance in zip(*annoy.get_nns_by_vector(emb, 2, include_distances=True)):
+            # if distance < SIMILARITY_THRESHOLD:
+            #     break
             # if extra_data["student_id"][id] != file.student_id:
             emb_sim.append(f"{distance} : {sentences[id]}")
         matches.append("\n".join(emb_sim))
+        break
     return "\n" + "\n".join(matches)
                     
                     

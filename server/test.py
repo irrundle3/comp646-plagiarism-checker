@@ -6,6 +6,11 @@ import pandas as pd
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
+test = np.array([[1,2,3],[4,5,6]])
+test = test.tobytes()
+test = np.frombuffer(test)
+print(test.reshape(-1, 3))
+
 text = []
 with open("text.txt") as file:
     text = file.read()
@@ -27,12 +32,12 @@ for i, emb in enumerate(embeddings):
     if i % 20 == 0:
         print(i, "/", len(embeddings))
 
-sentence = "I can make a selfish decision and do something that is different, but I’m doing here what I believe to be the right thing."
+sentence = "While I could do something differently for my own benefit, I would rather, as a politician, do the right thing, which is a rare occasion for those like us."
 res = model.encode(sentence, convert_to_numpy=True)
 annoy.build(10, n_jobs=-1)
 
 idx, sim = annoy.get_nns_by_vector(res, 10, include_distances=True)
-print(text[idx[0]])
-print(extra_data[idx[0]].sentence)
-
+print(text[idx[0]], text[idx[1]], text[idx[2]])
+print(extra_data["sentence"][idx[0]])
+print(sim)
 

@@ -47,7 +47,6 @@ def logout():
 def exit_handler():
     if os.path.exists("user_files/"):
         shutil.rmtree("user_files/")
-        UploadedFile.query.delete()
     else:
         print("user_files directory does not exist.")
 
@@ -58,6 +57,8 @@ atexit.register(exit_handler)
 with app.app_context():
     # Create all database tables
     db.create_all()
+    UploadedFile.query.delete()
+    db.session.commit()
     # db.drop_all()
     #     # Recreate all tables
     # db.create_all()

@@ -98,7 +98,6 @@ def get_text():
 
     if file_path is not None and os.path.isfile(file_path):
         text = model.read_doc(file_path)
-        text += "\n\n" + str(model.get_file_data(file_path))
         text += "\n\n" + str(model.find_matches(file_path))
         return jsonify({"text": text})
     abort(404, description="File not found")
