@@ -7,6 +7,9 @@ import atexit
 import glob
 import requests
 
+CNN = True
+ESSAYS = False
+
 def clean():
     for filename in glob.glob("text_file_*"):
         os.remove(filename)
@@ -39,13 +42,26 @@ for i, value in enumerate(cnn_column[:600]):
     with open(filename, 'w') as txt_file:
         txt_file.write(str(value))
 
+
 class_id = int(input("Class id: "))
-for i in range(100,130):
-    files2 = {'file': open(f'text_file_{i}.txt','rb')}
-    values = {"student_username": "ianrundle", "class_id":1}
-    r = requests.post("http://localhost:3000/api/student/document/upload", files=files2, data=values)
-    
-for i in range(500,530):
-    files2 = {'file': open(f'text_file_{i}.txt','rb')}
-    values = {"student_username": "ianrundle2", "class_id":1}
-    r = requests.post("http://localhost:3000/api/student/document/upload", files=files2, data=values)
+if ESSAYS:
+    for i in range(100,130):
+        files2 = {'file': open(f'text_file_{i}.txt','rb')}
+        values = {"student_username": "ianrundle", "class_id":1}
+        r = requests.post("http://localhost:3000/api/student/document/upload", files=files2, data=values)
+        
+    for i in range(500,530):
+        files2 = {'file': open(f'text_file_{i}.txt','rb')}
+        values = {"student_username": "ianrundle2", "class_id":1}
+        r = requests.post("http://localhost:3000/api/student/document/upload", files=files2, data=values)
+        
+if CNN:
+    for i in range(100,130):
+        files2 = {'file': open(f'cnn_{i}.txt','rb')}
+        values = {"student_username": "ianrundle", "class_id":1}
+        r = requests.post("http://localhost:3000/api/student/document/upload", files=files2, data=values)
+        
+    for i in range(500,530):
+        files2 = {'file': open(f'cnn_{i}.txt','rb')}
+        values = {"student_username": "ianrundle2", "class_id":1}
+        r = requests.post("http://localhost:3000/api/student/document/upload", files=files2, data=values)

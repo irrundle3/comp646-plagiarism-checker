@@ -16,7 +16,7 @@ poses = []
 file_ids = []
 student_ids = []
 
-SIMILARITY_THRESHOLD = 0.8
+SIMILARITY_THRESHOLD = 0.1
 CHUNK_INTERVAL = 10 # Num words each chunk shifts
 CHUNK_LENGTH = 100 # Num words in a chunk
 
@@ -79,7 +79,7 @@ def find_matches(path: os.PathLike):
     data = np.frombuffer(file.embedding, dtype="float32").reshape((-1, 384))
     for idx, emb in enumerate(data):
         emb_sim = {}
-        for id, distance in zip(*annoy.get_nns_by_vector(emb, 100, include_distances=True)):
+        for id, distance in zip(*annoy.get_nns_by_vector(emb, max(100, len(chunks)), include_distances=True)):
             if distance < SIMILARITY_THRESHOLD:
                 break
             if student_ids[id] != file.student_id:
