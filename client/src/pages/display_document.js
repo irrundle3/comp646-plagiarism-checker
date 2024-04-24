@@ -11,7 +11,7 @@ export default function DisplayDocument({ setActiveUser }) {
   const { classId, document } = useParams();
   const [username, setUsername] = useState("");
   const [docData, setDocData] = useState(""); // Document text data
-  const [matches, setMatches] = useState(""); // Matches or related information
+  // const [matches, setMatches] = useState(""); // Matches or related information
 
   async function viewDocument(username, classId, document) {
     try {
@@ -19,7 +19,7 @@ export default function DisplayDocument({ setActiveUser }) {
       if (response.ok) {
         const data = await response.json();
         setDocData(data.text || ""); // Handle missing data
-        setMatches(data.matches);
+        // setMatches(data.matches);
       } else {
         console.error("Failed to fetch document:", response.statusText);
       }
@@ -68,11 +68,11 @@ export default function DisplayDocument({ setActiveUser }) {
             {docData || "No document content available"}
           </Typography>
           
-          <Typography variant="h6" gutterBottom>
+          {/* <Typography variant="h6" gutterBottom>
             Related Information
-          </Typography>
+          </Typography> */}
 
-          <Typography variant="body2" gutterBottom>
+          {/* <Typography variant="body2" gutterBottom>
           { Object.entries(matches).map(([original_sentence, data]) => {
             return (
               <div>
@@ -83,7 +83,7 @@ export default function DisplayDocument({ setActiveUser }) {
               </div>
             )
           }) || "No matches found"}
-          </Typography>
+          </Typography> */}
         </CardContent>
       </Card>
     </Box>
