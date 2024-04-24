@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app import db
-from user_models import  Class, Teacher, Student
+import os
+from user_models import  Class, Teacher, Student, UploadedFile
 
 teacher_home_bp = Blueprint('teacher_home_bp', __name__)
 
@@ -138,3 +139,27 @@ def get_student_from_classes():
         }
         student_data.append(student_info)
     return jsonify(student_data)
+
+@teacher_home_bp.route("/teacher/class/students/document", methods=["GET"])
+def get_document_from_id():
+    print("jfei")
+    document_id = request.args.get('document_id')
+
+    if not document_id:
+        return jsonify({'error': 'No document provided'}), 400
+
+    file_obj = UploadedFile.query.filter_by(id=document_id).first()
+    student_obj = Student.query.filter_by(id=file_obj.student_id).first()
+    print("jfei")
+
+    if not file_obj:
+        return jsonify({'error': 'Document not found'}), 404
+
+    file_name_with_extension = os.path.basename(file_obj.path) 
+    response_data = {
+        'file_name': file_name_with_extension, 
+        'class_id': file_obj.class_id,  
+        'student_name': student_obj.username 
+    }
+
+    return jsonify(response_data)

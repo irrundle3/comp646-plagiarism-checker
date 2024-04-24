@@ -83,7 +83,8 @@ def find_matches(path: os.PathLike):
             if distance < SIMILARITY_THRESHOLD:
                 break
             if student_ids[id] != file.student_id:
-                emb_sim[sentences[id]] = [distance, poses[id], student_ids[id]]
+                emb_sim[sentences[id]] = [distance, poses[id], student_ids[id],file_ids[id]]
+                
         matches[chunks[idx]] = [emb_sim, original_poses[idx]]
     return matches
                     
